@@ -1,0 +1,24 @@
+Describa la idea de escribir el main driver primero y llenar los huecos luego. ¿Por qué es buena idea?
+Porque se tiene un programa sólido. Se ahorra mucho tiempo no haciendo trabajo de más. Se ve estructura y secuencia. 
+Escribir todo como funciones es cool. -> agregar cosas o encontrar errores.
+
+
+¿Cuál es la idea detrás de la función mark_filled? ¿Por qué es buena idea crearla en vez del código original al
+ que reemplaza?
+Es una función antibug. Verifica que los parametros a ingresar sean correctos, y si no lo son, entrega info especifica de
+cual es el rollo.
+
+
+¿Qué es refactoring?
+es reorganizar un programa de manera tal que sea más facil probarlo. (dejando casi todo como funciones)
+-> luego probarlo bajo condiciones adicionales, viendo que tan plastico es.
+
+¿Por qué es importante implmentar tests que sean sencillos de escribir? ¿Cuál es la estrategia usada en el tutorial?
+Porque si no lo son, hay peligro de enredarse y complicar mas la cuestion,
+
+
+El tutorial habla de dos grandes ideas para optimizar programas, ¿cuáles son esas ideas? Descríbalas.
+
+¿Qué es lazy evaluation?
+
+Describa la other moral del tutorial (es una de las más importantes a la hora de escribir buen código).
