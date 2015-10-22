@@ -1,24 +1,49 @@
 Describa la idea de escribir el main driver primero y llenar los huecos luego. ¿Por qué es buena idea?
-Porque se tiene un programa sólido. Se ahorra mucho tiempo no haciendo trabajo de más. Se ve estructura y secuencia. 
-Escribir todo como funciones es cool. -> agregar cosas o encontrar errores.
+
+Al escribir el main driver primero se puede tener una estructura sólida desde el comienzo, poder darle una secuencialidad de manera más sencilla. Al escribir el programa como una serie de funciones se ahorra tiempo ya que es más fácil encontrar bugs, agregarle cosas al código o incluso no hacer cosas que el problema no lo requiera.
 
 
 ¿Cuál es la idea detrás de la función mark_filled? ¿Por qué es buena idea crearla en vez del código original al
  que reemplaza?
-Es una función antibug. Verifica que los parametros a ingresar sean correctos, y si no lo son, entrega info especifica de
-cual es el rollo.
+
+Es una función antibug. Verifica que los parametros a ingresar sean correctos, y si no lo son, entrega información especifica de cuál es el problema, evitando que el programa se caiga. Es mucho más fácil corregir errores con funciones de este tipo.
 
 
 ¿Qué es refactoring?
-es reorganizar un programa de manera tal que sea más facil probarlo. (dejando casi todo como funciones)
--> luego probarlo bajo condiciones adicionales, viendo que tan plastico es.
+
+Es reorganizar un programa de manera tal que sea más facil probarlo. Sería el equivalente a 'pulirlo'. Limpiándolo y dejando claro que hacen todas las partes del código. En esta parte es útil probar el programa con casos extremos para ver si tira errores. Si es así, hay que retocar algunas partes entonces.
+
 
 ¿Por qué es importante implmentar tests que sean sencillos de escribir? ¿Cuál es la estrategia usada en el tutorial?
-Porque si no lo son, hay peligro de enredarse y complicar mas la cuestion,
+
+Porque si no lo son, hay peligro de enredarse y complicarse más la vida, agregando errores adicionales al programa o modificando partes que no son necesarias de modificar. La estrategia del tutorial es crear una lista de strings con todos los tests a realizar y sus resultados. Funcionaría como una especie de check in. De esta manera se pueden agregar o sacar tests fácilmente. El único contra es que requiere una enorme cantidad de tiempo adicional para la manufactura del programa.
 
 
 El tutorial habla de dos grandes ideas para optimizar programas, ¿cuáles son esas ideas? Descríbalas.
 
+La primera idea es el 'Asymptotic Analysis',que es analizar funciones para números grandes y estudiar el tiempo que tarda el ordenar en procesar la data, y así medir su eficacia. Lo genial de esto es que se guarda la información en la memoria, por lo que no tiene que recalcular después lo mismo. En otras palabras, se puede intercambiar memoria por tiempo de ejecución.
+La segunda idea es el 'Binary Search', que es simplemente reducir la cantidad de datos a procesar al estar buscando en una lista o en un array. Se hace primero ordenando la pila de datos, luego dividiendola en la mitad y comparando el dato buscado con ese. Si es mayor o menor, se repite el proceso en esa pila de datos. La cantidad de iteraciones con este método son mucho menos que de manera aleatoria o secuencial.
+
+
 ¿Qué es lazy evaluation?
 
+El lazy evaluation es una táctica de optimización. Consiste en no evaluar un dato hasta que sea necesario. De esta manera se evitan cálculos innecesarios. Es la versión virtual de la Ley del Mínimo Esfuerzo.
+
+
 Describa la other moral del tutorial (es una de las más importantes a la hora de escribir buen código).
+
+La other moral es que para escribir un programa veloz, hay que hacerlo simple. Luego de verificar su correcto funcionamiento, ir agregando cosas de a una a la vez, con la idea en mente de dejarlo lo más simple posible. De esta forma se evitan errores enormes por arrastre e incluso permite que crezca infinitamente (el código).
+
+
+
+
+
+
+
+
+
+
+
+
+
+

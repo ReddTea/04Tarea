@@ -1,15 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import numpy as np
 
 class Planeta(object):
+
+    '''
+    Es un objeto al cual hay que darle ciertos parametros (condiciones
+    iniciales), que tiene metodos de resolucion integrados para su
+    ecuacion de movimiento asociada.
+    '''
+    global G,M,cte
     G=1.0
     M=1.0
     cte=G*M
-    '''
-    Complete el docstring.
-    '''
 
-    def __init__(self, condicion_inicial, alpha=0):
+    def __init__(self, condicion_inicial, alpha=0, mass=1.0):
         '''
         __init__ es un método especial que se usa para inicializar las
         instancias de una clase.
@@ -19,67 +24,99 @@ class Planeta(object):
         print(mercurio.alpha)
         0.
         '''
-        self.y_actual = condicion_inicial
-        self.t_actual = 0.
-        self.alpha = alpha
-        self.m = 1.0 #mass
-    def ecuacion_de_movimiento(self):
+        self.y_now=condicion_inicial
+        self.t_now= 0.0
+        self.alpha= alpha
+        self.mass= mass #mass
+    def edm(self):
         '''
         Implementa la ecuación de movimiento, como sistema de ecuaciónes de
-        primer orden.
+        primer orden. Lo hace en la forma de  funcion y entrega un array,
+        al cual no le hemos sacado mucho el jugo porque resulta realmente
+        confuso.
         '''
-        x,y,vx,vy= self.y_actual #r y r' ahora
-        fx=lambda x,y,t: (cte*x/(x**2+y**2)**2)*(np.sqrt(x**2+y**2) - 2*self.alpha)
-        fy=lambda x,y,t: (cte*y/(x**2+y**2)**2)*(np.sqrt(x**2+y**2) - 2*self.alpha)
-        ###fx = #...(lambda x: x*2)(3) lambda x: x*2
-        # fy = ...
+        x,y,vx,vy= self.y_now
+        fx=lambda x,y: cte*x/((x**2+y**2)**2)*(2*self.alpha-np.sqrt(x**2+y**2))
+        fy=lambda x,y: cte*y/((x**2+y**2)**2)*(2*self.alpha-np.sqrt(x**2+y**2))
 
-        return [vx, vy, fx, fy]
+        return np.array([vx, vy, fx, fy])
 
     def avanza_euler(self, dt):
         '''
         Toma la condición actual del planeta y avanza su posicion y velocidad
         en un intervalo de tiempo dt usando el método de Euler explícito. El
-        método no retorna nada, pero re-setea los valores de self.y_actual.
+        método no retorna nada, pero re-setea los valores de self.y_now.
         '''
-        dy = dt*(self.ecuacion_de_movimiento())
-        self.y_actual += dy
-        self.t_actual += dt
+        x0,y0,vx0,vy0= self.y_now
+        fx=self.edm()[2]
+        fy=self.edm()[3]
+
+        xn=x0+ dt*vx0
+        yn=y0+ dt*vy0
+
+        vxn=vx0+ dt*fx(x0,y0)
+        vyn=vy0+ dt*fy(x0,y0)
+
+        self.y_now= xn,yn,vxn,vyn
+
         pass
 
     def avanza_rk4(self, dt):
         '''
         Similar a avanza_euler, pero usando Runge-Kutta 4.
+        hacer como array si hay tiempo, se me fundio el cerebro intentando
+        se deberia poder hacer en como 4 lineas.
         '''
-        rk1=self.ecuacion_de_movimiento()
-        rk2=self.ecuacion_de_movimiento(dt*rk1/2.0)
-        rk3=self.ecuacion_de_movimiento(dt*rk2/2.0)
-        rk4=self.ecuacion_de_movimiento(dt*rk3)
+        x0,y0,vx0,vy0= self.y_now
+        fx=self.edm()[2]
+        fy=self.edm()[3]
 
-        dy= dt*(rk1 +rk2*2 +rk3*2 +rk4)/6.0
-        self.y_actual +=dy
-        self.t_actual +=dt
+        #RK1
+        rx1=dt*vx0;         ry1=dt*vy0
+        vx1=dt*fx(x0,y0);   vy1=dt*fy(x0,y0)
+
+        #rk2
+        rx2=dt*(vx0+ rx1*0.5);        ry2=dt*(vy0+ ry1*0.5)
+        vx2=dt*fx(x0+ rx1*0.5,y0+ ry1*0.5);  vy2=dt*fy(x0+ rx1*0.5,y0+ ry1*0.5)
+
+        #rk3
+        rx3=dt*(vx0+ rx2*0.5);        ry3=dt*(vy0+ ry2*0.5)
+        vx3=dt*fx(x0+ rx2*0.5,y0+ ry2*0.5);  vy3=dt*fy(x0+ rx2*0.5,y0+ ry2*0.5)
+
+        #rk4
+        rx4=dt*(vx0+ rx3);        ry4=dt*(vy0+ ry3)
+        vx4=dt*fx(x0+ rx3,y0+ ry3);  vy4=dt*fy(x0+ rx3,y0+ ry3)
+
+        xn=x0+ (rx1+rx2*2+rx3*2+rx4)/6.0
+        yn=y0+ (ry1+ry2*2+ry3*2+ry4)/6.0
+        vxn= vx0+ (vx1+vx2*2+vx3*2+vx4)/6.0
+        vyn= vy0+ (vy1+vy2*2+vy3*2+vy4)/6.0
+
+        self.y_now= xn,yn,vxn,vyn
+
         pass
 
     def avanza_verlet(self, dt):
         '''
         Similar a avanza_euler, pero usando Verlet.
         '''
-        x,y,vx,vy = self.y_actual
-        Y= x,y #posicion
-        V= vx,vy
-        f=self.ecuacion_de_movimiento()
-        dYn = V*dt+ dt**2*f[2:]/2.0
-        dVn = dt*((f[:1])+f(xn,yn,self.t_actual+dt))/2.0
+        x0,y0,vx0,vy0= self.y_now
+        fx=self.edm()[2]
+        fy=self.edm()[3]
+        xn= x0 + vx0*dt +fx(x0,y0)*0.5*dt**2
+        yn= y0 + vy0*dt +fy(x0,y0)*0.5*dt**2
+        vxn=vx0+ (fx(x0,y0)+ fx(xn,yn))*0.5*dt
+        vyn=vy0+ (fy(x0,y0)+ fy(xn,yn))*0.5*dt
+        self.y_now= xn,yn,vxn,vyn
 
-        self.y_actual += dYn,dVn
-        self.t_actual += dt
         pass
 
     def energia_total(self):
         '''
         Calcula la enérgía total del sistema en las condiciones actuales.
+        Resulta quizas demas explicarle al lector que la energia total es
+        la suma de la energia cinetica y la potencial gravitatoria
         '''
-        x,y,vx,vy= self.y_actual
-        return 0.5*m*(vx**2 +vy**2)+ cte*m*(self.alpha-np.sqrt(x**2+y**2))/(x**2+y**2)
+        x0,y0,vx0,vy0= self.y_now
+        return 0.5*self.mass*(vx0**2 +vy0**2)+ cte*self.mass*(self.alpha-np.sqrt(x0**2+y0**2))/(x0**2+y0**2)
         pass
